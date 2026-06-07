@@ -110,3 +110,33 @@ body.theme-dark .gravepedia-form textarea {
     background: #1e2125;
     border-color: rgba(255, 255, 255, 0.12);
 }
+
+.central-featured-lang .link-box,
+.central-featured-lang strong,
+.central-featured-lang small {
+    white-space: nowrap;
+}
+
+@media (min-width: 481px) {
+    .central-featured-lang {
+        width: 15.5rem;
+    }
+
+    .central-featured-lang strong {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .central-featured-lang {
+        overflow-wrap: normal;
+    }
+
+    .central-featured-lang strong {
+        font-size: 1.2rem;
+    }
+
+    .central-featured-lang small {
+        font-size: 1.15rem;
+    }
+}
