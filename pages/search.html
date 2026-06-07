@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Search - {{APP_NAME}}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@latest/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../lib/Web-Framework/styles/common.css">
+    <link rel="stylesheet" href="../index.css">
+</head>
+
+<body>
+    <full-header></full-header>
+    <article>
+        <full-page-toolbar title="Search {{APP_NAME}}" edit-text="Edit Page" edit-href="#" variant="page"></full-page-toolbar>
+        <main class="gravepedia-page">
+            <section class="gravepedia-panel" aria-label="Search Gravepedia">
+                <p class="gravepedia-muted" id="gravepedia-search-meta">Search memorials, cemeteries, obituaries, photo requests, and cemetery maps.</p>
+                <form class="gravepedia-form" id="search-page-form" action="#" role="search">
+                    <label for="searchPageInput">
+                        <span class="screen-reader-text">Search {{APP_NAME}}</span>
+                        <input id="searchPageInput" name="search" type="search" autofocus autocomplete="off" placeholder="Search Gravepedia...">
+                    </label>
+                    <button class="pure-button pure-button-primary-progressive" type="submit">
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                        <span>Search</span>
+                    </button>
+                </form>
+                <div class="gravepedia-actions" aria-label="Popular searches">
+                    <a class="site-chip" href="search.html?q=memorials">Memorials</a>
+                    <a class="site-chip" href="search.html?q=cemeteries">Cemeteries</a>
+                    <a class="site-chip" href="search.html?q=war%20graves">War Graves</a>
+                    <a class="site-chip" href="search.html?q=photo%20requests">Photo Requests</a>
+                </div>
+            </section>
+            <section id="gravepedia-search-results" class="gravepedia-search-results" aria-live="polite"></section>
+        </main>
+        <full-footer></full-footer>
+    </article>
+
+    <script src="../site-info.js"></script>
+    <script src="../lib/Web-Framework/site-info.js"></script>
+    <script src="../lib/Web-Framework/components/mini-header.js"></script>
+    <script src="../lib/Web-Framework/components/full-header.js"></script>
+    <script src="../lib/Web-Framework/components/full-page-toolbar.js"></script>
+    <script src="../lib/Web-Framework/components/full-footer.js"></script>
+    <script src="../components/app-search.js"></script>
+    <script src="../lib/Web-Framework/site-runtime.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,3 @@
+[submodule "lib/Web-Framework"]
+	path = lib/Web-Framework
+	url = https://github.com/Genepedia/Web-Framework.git

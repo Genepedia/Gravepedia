@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home - {{APP_NAME}}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@latest/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../lib/Web-Framework/styles/common.css">
+    <link rel="stylesheet" href="../index.css">
+</head>
+
+<body>
+    <full-header></full-header>
+    <article>
+        <full-page-toolbar title="Home {{APP_NAME}}" edit-text="Edit Page" edit-href="#" variant="page"></full-page-toolbar>
+        <main class="gravepedia-page">
+            <section class="gravepedia-panel">
+                <h2>Welcome to {{APP_NAME}}</h2>
+                <p>{{APP_NAME}} is a shared place for cemetery records, memorial profiles, inscriptions, maps, and preservation notes.</p>
+                <div class="gravepedia-actions">
+                    <a class="pure-button pure-button-primary-progressive" href="search.html">Search records</a>
+                    <a class="pure-button" href="contact.html">Contribute</a>
+                </div>
+            </section>
+
+            <section class="gravepedia-page__grid" aria-label="Gravepedia overview">
+                <div class="gravepedia-panel gravepedia-kpi">
+                    <span class="gravepedia-muted">Memorial records</span>
+                    <strong>18M+</strong>
+                    <span>Profiles, inscriptions, photos, and burial notes.</span>
+                </div>
+                <div class="gravepedia-panel gravepedia-kpi">
+                    <span class="gravepedia-muted">Cemetery places</span>
+                    <strong>620K+</strong>
+                    <span>Locations, sections, coordinates, and preservation details.</span>
+                </div>
+                <div class="gravepedia-panel gravepedia-kpi">
+                    <span class="gravepedia-muted">Open requests</span>
+                    <strong>480K+</strong>
+                    <span>Photo, transcription, and location requests for volunteers.</span>
+                </div>
+            </section>
+
+            <section class="gravepedia-page__grid" aria-label="Featured work">
+                <article class="gravepedia-panel">
+                    <h3>Featured Collections</h3>
+                    <ul class="gravepedia-list">
+                        <li>War graves and veteran memorials</li>
+                        <li>Historic churchyards and family plots</li>
+                        <li>Transcribed epitaphs and cemetery maps</li>
+                    </ul>
+                </article>
+                <article class="gravepedia-panel">
+                    <h3>Community Tasks</h3>
+                    <ul class="gravepedia-list">
+                        <li>Verify cemetery coordinates</li>
+                        <li>Attach photos to memorial entries</li>
+                        <li>Transcribe hard-to-read inscriptions</li>
+                    </ul>
+                </article>
+            </section>
+        </main>
+        <full-footer></full-footer>
+    </article>
+
+    <script src="../site-info.js"></script>
+    <script src="../lib/Web-Framework/site-info.js"></script>
+    <script src="../lib/Web-Framework/components/mini-header.js"></script>
+    <script src="../lib/Web-Framework/components/full-header.js"></script>
+    <script src="../lib/Web-Framework/components/full-page-toolbar.js"></script>
+    <script src="../lib/Web-Framework/components/full-footer.js"></script>
+    <script defer src="../components/app-search.js"></script>
+    <script src="../lib/Web-Framework/site-runtime.js"></script>
+</body>
+
+</html>

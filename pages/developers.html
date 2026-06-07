@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Developers - {{APP_NAME}}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@latest/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../lib/Web-Framework/styles/common.css">
+    <link rel="stylesheet" href="../index.css">
+</head>
+
+<body>
+    <full-header></full-header>
+    <article>
+        <full-page-toolbar title="Developers" edit-text="Edit Page" edit-href="#" variant="page"></full-page-toolbar>
+        <main class="gravepedia-page">
+            <section class="gravepedia-panel">
+                <h2>Developer Notes</h2>
+                <p>{{APP_NAME}} uses the shared Web-Framework for page chrome and the shared Genepedia API for authentication.</p>
+                <ul class="gravepedia-list">
+                    <li>Site configuration lives in <code>site-info.js</code>.</li>
+                    <li>Reusable UI lives in <code>lib/Web-Framework</code>.</li>
+                    <li>Shared API endpoints live in the sibling <code>API</code> repository.</li>
+                </ul>
+            </section>
+        </main>
+        <full-footer></full-footer>
+    </article>
+    <script src="../site-info.js"></script>
+    <script src="../lib/Web-Framework/site-info.js"></script>
+    <script src="../lib/Web-Framework/components/mini-header.js"></script>
+    <script src="../lib/Web-Framework/components/full-header.js"></script>
+    <script src="../lib/Web-Framework/components/full-page-toolbar.js"></script>
+    <script src="../lib/Web-Framework/components/full-footer.js"></script>
+    <script defer src="../components/app-search.js"></script>
+    <script src="../lib/Web-Framework/site-runtime.js"></script>
+</body>
+
+</html>

@@ -37,4 +37,8 @@ Gravepedia is a free, community-powered memorial platform that helps people loca
 - Add photos and transcriptions for the places you visit.
 - Join local projects to document cemeteries in your area.
 
+<<<<<<< HEAD
 Thank you for helping keep stories alive.
+=======
+Thank you for helping keep stories alive.
+>>>>>>> 0fc2978 (chore: move Electron Forge app to repository root)

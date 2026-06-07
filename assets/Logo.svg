@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Gravepedia logo</title>
+  <desc id="desc">A green shield with a stylized cemetery memorial and book pages.</desc>
+  <defs>
+    <linearGradient id="stone" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f7f8f6"/>
+      <stop offset="1" stop-color="#c7d0c7"/>
+    </linearGradient>
+    <linearGradient id="field" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#1f6f5b"/>
+      <stop offset="1" stop-color="#143d46"/>
+    </linearGradient>
+  </defs>
+  <circle cx="256" cy="256" r="236" fill="url(#field)"/>
+  <circle cx="256" cy="256" r="214" fill="none" stroke="#d9eadb" stroke-width="12"/>
+  <path fill="#d9eadb" d="M110 360c58-30 103-45 146-45s88 15 146 45v42H110z"/>
+  <path fill="url(#stone)" stroke="#12343b" stroke-width="12" d="M178 324V188c0-48 35-86 78-86s78 38 78 86v136z"/>
+  <path fill="none" stroke="#1f6f5b" stroke-linecap="round" stroke-width="18" d="M256 151v88m-38-44h76"/>
+  <path fill="#ffffff" d="M141 372c49-22 86-33 115-33 29 0 66 11 115 33-49 12-86 18-115 18-29 0-66-6-115-18z" opacity=".92"/>
+  <path fill="none" stroke="#143d46" stroke-linecap="round" stroke-width="10" d="M170 371c35-10 64-15 86-15s51 5 86 15"/>
+</svg>

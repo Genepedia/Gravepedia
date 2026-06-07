@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Contact - {{APP_NAME}}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@latest/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../lib/Web-Framework/styles/common.css">
+    <link rel="stylesheet" href="../index.css">
+</head>
+
+<body>
+    <full-header></full-header>
+    <article>
+        <full-page-toolbar title="Contact {{APP_NAME}}" edit-text="Edit Page" edit-href="#" variant="page"></full-page-toolbar>
+        <main class="gravepedia-page">
+            <section class="gravepedia-panel">
+                <h2>Contribute to {{APP_NAME}}</h2>
+                <p>Use this page for cemetery corrections, photo requests, partnership notes, and preservation leads.</p>
+                <form class="gravepedia-form" onsubmit="event.preventDefault(); document.getElementById('contact-status').textContent = 'Message saved locally for this demo.';">
+                    <label>Name <input name="name" autocomplete="name" required></label>
+                    <label>Email <input name="email" type="email" autocomplete="email" required></label>
+                    <label>Topic
+                        <select name="topic">
+                            <option>Cemetery correction</option>
+                            <option>Photo request</option>
+                            <option>Partnership</option>
+                            <option>General question</option>
+                        </select>
+                    </label>
+                    <label>Message <textarea name="message" rows="5" required></textarea></label>
+                    <button class="pure-button pure-button-primary-progressive" type="submit">Send message</button>
+                    <span id="contact-status" class="gravepedia-muted" role="status" aria-live="polite"></span>
+                </form>
+            </section>
+        </main>
+        <full-footer></full-footer>
+    </article>
+    <script src="../site-info.js"></script>
+    <script src="../lib/Web-Framework/site-info.js"></script>
+    <script src="../lib/Web-Framework/components/mini-header.js"></script>
+    <script src="../lib/Web-Framework/components/full-header.js"></script>
+    <script src="../lib/Web-Framework/components/full-page-toolbar.js"></script>
+    <script src="../lib/Web-Framework/components/full-footer.js"></script>
+    <script defer src="../components/app-search.js"></script>
+    <script src="../lib/Web-Framework/site-runtime.js"></script>
+</body>
+
+</html>

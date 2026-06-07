@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Page Not Found - {{APP_NAME}}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@latest/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../lib/Web-Framework/styles/common.css">
+    <link rel="stylesheet" href="../index.css">
+</head>
+
+<body>
+    <full-header></full-header>
+    <article>
+        <full-page-toolbar title="Page Not Found" variant="page"></full-page-toolbar>
+        <main class="gravepedia-page">
+            <section class="gravepedia-panel">
+                <h2>We could not find that page.</h2>
+                <p>Try searching Gravepedia or return to the home page.</p>
+                <div class="gravepedia-actions">
+                    <a class="pure-button pure-button-primary-progressive" href="../index.html">Go home</a>
+                    <a class="pure-button" href="search.html">Search</a>
+                </div>
+            </section>
+        </main>
+        <full-footer></full-footer>
+    </article>
+    <script src="../site-info.js"></script>
+    <script src="../lib/Web-Framework/site-info.js"></script>
+    <script src="../lib/Web-Framework/components/mini-header.js"></script>
+    <script src="../lib/Web-Framework/components/full-header.js"></script>
+    <script src="../lib/Web-Framework/components/full-page-toolbar.js"></script>
+    <script src="../lib/Web-Framework/components/full-footer.js"></script>
+    <script defer src="../components/app-search.js"></script>
+    <script src="../lib/Web-Framework/site-runtime.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Settings - {{APP_NAME}}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@latest/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../lib/Web-Framework/styles/common.css">
+    <link rel="stylesheet" href="../index.css">
+</head>
+
+<body>
+    <full-header></full-header>
+    <article>
+        <full-page-toolbar title="Settings" edit-text="Edit Page" edit-href="#" variant="page"></full-page-toolbar>
+        <main class="gravepedia-page">
+            <section class="gravepedia-panel">
+                <h2>App Settings</h2>
+                <p class="gravepedia-muted">These preferences are stored locally in this browser.</p>
+                <form class="gravepedia-form" id="settings-form">
+                    <label>Theme
+                        <select id="setting-theme">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                        </select>
+                    </label>
+                    <label>Default search focus
+                        <select id="setting-focus">
+                            <option value="all">All Gravepedia records</option>
+                            <option value="memorials">Memorials</option>
+                            <option value="cemeteries">Cemeteries</option>
+                            <option value="photos">Photo requests</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span><input id="setting-show-maps" type="checkbox"> Show map-first cemetery views when available</span>
+                    </label>
+                    <div class="gravepedia-actions">
+                        <button class="pure-button pure-button-primary-progressive" type="submit">Save settings</button>
+                        <button class="pure-button" id="reset-settings" type="button">Reset</button>
+                        <span id="settings-status" class="gravepedia-muted" role="status" aria-live="polite"></span>
+                    </div>
+                </form>
+            </section>
+        </main>
+        <full-footer></full-footer>
+    </article>
+
+    <script src="../site-info.js"></script>
+    <script src="../lib/Web-Framework/site-info.js"></script>
+    <script src="../lib/Web-Framework/components/mini-header.js"></script>
+    <script src="../lib/Web-Framework/components/full-header.js"></script>
+    <script src="../lib/Web-Framework/components/full-page-toolbar.js"></script>
+    <script src="../lib/Web-Framework/components/full-footer.js"></script>
+    <script defer src="../components/app-search.js"></script>
+    <script src="../lib/Web-Framework/site-runtime.js"></script>
+    <script>
+        (() => {
+            const key = 'gravepedia-settings';
+            const defaults = { theme: 'light', focus: 'all', showMaps: true };
+            const form = document.getElementById('settings-form');
+            const status = document.getElementById('settings-status');
+            const read = () => {
+                try { return Object.assign({}, defaults, JSON.parse(localStorage.getItem(key) || '{}')); } catch { return defaults; }
+            };
+            const write = (settings) => {
+                localStorage.setItem(key, JSON.stringify(settings));
+                localStorage.setItem('app-theme', settings.theme);
+                document.body.classList.toggle('theme-dark', settings.theme === 'dark');
+            };
+            const fill = (settings) => {
+                document.getElementById('setting-theme').value = settings.theme;
+                document.getElementById('setting-focus').value = settings.focus;
+                document.getElementById('setting-show-maps').checked = Boolean(settings.showMaps);
+            };
+            fill(read());
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                write({
+                    theme: document.getElementById('setting-theme').value,
+                    focus: document.getElementById('setting-focus').value,
+                    showMaps: document.getElementById('setting-show-maps').checked,
+                });
+                status.textContent = 'Saved';
+            });
+            document.getElementById('reset-settings').addEventListener('click', () => {
+                localStorage.removeItem(key);
+                fill(defaults);
+                write(defaults);
+                status.textContent = 'Reset';
+            });
+        })();
+    </script>
+</body>
+
+</html>
