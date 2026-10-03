@@ -8,6 +8,32 @@
     padding: 1rem 1rem 2rem;
 }
 
+.gravepedia-home-hero {
+    box-sizing: border-box;
+    max-width: 56rem;
+    margin: 2rem auto 1rem;
+    padding: 0 1rem;
+    text-align: center;
+}
+
+.gravepedia-home-hero img {
+    display: block;
+    width: min(18rem, 70vw);
+    height: auto;
+    margin: 0 auto 1rem;
+}
+
+.gravepedia-home-hero h1 {
+    margin: 0 auto 0.5rem;
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+}
+
+.gravepedia-home-hero p {
+    max-width: 40rem;
+    margin: 0 auto;
+    color: var(--color-subtle, #54595d);
+}
+
 .gravepedia-page__grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));

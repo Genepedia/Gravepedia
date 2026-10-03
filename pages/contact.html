@@ -19,22 +19,8 @@
         <main class="gravepedia-page">
             <section class="gravepedia-panel">
                 <h2>Contribute to {{APP_NAME}}</h2>
-                <p>Use this page for cemetery corrections, photo requests, partnership notes, and preservation leads.</p>
-                <form class="gravepedia-form" onsubmit="event.preventDefault(); document.getElementById('contact-status').textContent = 'Message saved locally for this demo.';">
-                    <label>Name <input name="name" autocomplete="name" required></label>
-                    <label>Email <input name="email" type="email" autocomplete="email" required></label>
-                    <label>Topic
-                        <select name="topic">
-                            <option>Cemetery correction</option>
-                            <option>Photo request</option>
-                            <option>Partnership</option>
-                            <option>General question</option>
-                        </select>
-                    </label>
-                    <label>Message <textarea name="message" rows="5" required></textarea></label>
-                    <button class="pure-button pure-button-primary-progressive" type="submit">Send message</button>
-                    <span id="contact-status" class="gravepedia-muted" role="status" aria-live="polite"></span>
-                </form>
+                <p>Submit a sourced memorial for review. General contact messages and photo uploads are not connected yet.</p>
+                <a class="pure-button pure-button-primary-progressive" href="search.html#submit-memorial">Submit a memorial</a>
             </section>
         </main>
         <full-footer></full-footer>

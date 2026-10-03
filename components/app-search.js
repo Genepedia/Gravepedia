@@ -1,759 +1,310 @@
-<<<<<<< HEAD
-(function initAppSearchModule() {
-=======
 (function initGravepediaSearch() {
->>>>>>> ec6052d3872e0fbec1db9610b4257e17cb502462
     if (window.AppSearch) {
         return;
     }
 
-<<<<<<< HEAD
-    const APP_SEARCH_STYLE_ID = 'app-search-styles';
-    const APP_SEARCH_DROPDOWN_LIMIT = 6;
+    const DROPDOWN_LIMIT = 6;
+    const STYLE_ID = 'gravepedia-search-styles';
+    let nextDropdownId = 0;
 
-    function resolveAppSearchScriptUrl() {
-        const script = document.currentScript || document.querySelector('script[src*="app-search.js"]');
-        if (script?.src) {
-            return script.src;
-        }
-
-        const pathname = window.location.pathname.replace(/\\/g, '/');
-        if (pathname.includes('/pages/') || pathname.match(/\/people\/[^/]+\//)) {
-            return new URL('../components/app-search.js', window.location.href).href;
-        }
-
-        return new URL('components/app-search.js', window.location.href).href;
-    }
-
-    const PEOPLE_REGISTRY_SCRIPT_URL = new URL('../lib/people-registry.js', resolveAppSearchScriptUrl()).href;
-
-    function getAppName() {
-        const name = window.App?.getName?.() || window.App?.Name;
-        return (typeof name === 'string' && name.trim()) ? name.trim() : '';
-    }
-
-    const APP_SEARCH_STYLES = String.raw`
-.app-search-anchor {
-  position: relative;
-}
-
+    const SEARCH_STYLES = `
+.app-search-anchor { position: relative; }
 .app-search__dropdown {
-  position: absolute;
-  top: calc(100% + 0.25rem);
-  left: 0;
-  right: 0;
-  z-index: 1200;
-  margin: 0;
-  padding: 0.35rem 0;
-  list-style: none;
-  border: 1px solid var(--app-search-border, rgba(0, 0, 0, 0.12));
-  border-radius: 0.125rem;
-  background: var(--app-search-dropdown-bg, #fff);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  box-sizing: border-box;
-  max-height: 18rem;
-  overflow: auto;
+  position: absolute; z-index: 1200; top: calc(100% + .25rem); left: 0; right: 0;
+  box-sizing: border-box; max-height: 18rem; overflow: auto; margin: 0; padding: .35rem 0;
+  list-style: none; border: 1px solid var(--border-color-base, rgba(0,0,0,.14));
+  border-radius: var(--border-radius-base, .125rem); background: var(--background-color-base, #fff);
+  color: var(--color-base, #202122); box-shadow: 0 8px 24px rgba(0,0,0,.14);
 }
-
-.app-search__dropdown[hidden] {
-  display: none !important;
+.app-search__dropdown[hidden] { display: none !important; }
+.app-search__option { display: block; margin: 0; padding: .55rem .85rem; cursor: pointer; }
+.app-search__option:hover, .app-search__option.is-active {
+  background: var(--background-color-interactive, rgba(0,0,0,.06));
 }
-
-.app-search__option {
-  margin: 0;
-  padding: 0;
-}
-
-.app-search__option-link {
-  display: block;
-  padding: 0.55rem 0.85rem;
-  color: var(--app-search-fg, #202122);
-  font: 0.9375rem -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif;
-  text-decoration: none;
-  text-align: left;
-}
-
-.app-search__option-link:hover,
-.app-search__option.is-active .app-search__option-link {
-  background: var(--app-search-hover, rgba(0, 0, 0, 0.05));
-  color: var(--app-search-fg, #202122);
-  text-decoration: none;
-}
-
-.app-search__option-title {
-  display: block;
-  font-weight: 600;
-}
-
-.app-search__option-description {
-  display: block;
-  margin-top: 0.15rem;
-  color: var(--app-search-muted, #54595d);
-  font-size: 0.8125rem;
-  line-height: 1.35;
-}
-
-.app-search__dropdown-footer {
-  margin: 0.35rem 0 0;
-  padding: 0.35rem 0 0;
-  border-top: 1px solid var(--app-search-border, rgba(0, 0, 0, 0.12));
-}
-
-.app-search__dropdown-all {
-  display: block;
-  padding: 0.55rem 0.85rem;
-  color: var(--app-search-link, #3366cc);
-  font: 0.875rem -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif;
-  text-align: left;
-  text-decoration: none;
-}
-
-.app-search__dropdown-all:hover {
-  background: var(--app-search-hover, rgba(0, 0, 0, 0.05));
-  text-decoration: none;
-}
-
-.app-search__dropdown-empty {
-  padding: 0.65rem 0.85rem;
-  color: var(--app-search-muted, #54595d);
-  font: 0.875rem -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif;
-}
-
-body.theme-dark {
-  --app-search-border: rgba(255, 255, 255, 0.12);
-  --app-search-dropdown-bg: #313438;
-  --app-search-fg: #eaecf0;
-  --app-search-muted: #a7adb4;
-  --app-search-hover: rgba(255, 255, 255, 0.08);
-  --app-search-link: #6b9eff;
-}
-
-body:not(.theme-dark) {
-  --app-search-border: rgba(0, 0, 0, 0.12);
-  --app-search-dropdown-bg: #ffffff;
-  --app-search-fg: #202122;
-  --app-search-muted: #54595d;
-  --app-search-hover: rgba(0, 0, 0, 0.05);
-  --app-search-link: #3366cc;
-}
-
-.header-chrome__search-form.app-search-anchor {
-  position: relative;
-  overflow: visible;
-  z-index: 2;
-}
-
-.header-chrome__search-form .app-search__dropdown {
-  min-width: 16rem;
-  right: 0;
-  left: auto;
-  width: max(16rem, 100%);
-}
-
-.main-content.search-page {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 1rem 1rem 2rem;
-}
-
-.search-page__panel {
-  margin-bottom: 1.5rem;
-  padding: 1.35rem 1.5rem 1.5rem;
-  border: 1px solid var(--app-search-border, rgba(0, 0, 0, 0.12));
-  border-radius: var(--border-radius-base, 0.125rem);
-  background: var(--background-color-base, #ffffff);
-  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.08);
-  box-sizing: border-box;
-}
-
-body.theme-dark .search-page__panel {
-  background: #242629;
-  box-shadow: inset 0 -1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.search-page__lead {
-  margin: 0 0 1.1rem;
-  color: var(--app-search-muted, #54595d);
-  font: 0.9375rem/1.55 -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif;
-}
-
-.search-page__form {
-  margin: 0;
-}
-
-.search-page__bar {
-  display: flex;
-  align-items: stretch;
-  width: 100%;
-  min-height: 2.875rem;
-  border: 1px solid var(--app-search-border, rgba(0, 0, 0, 0.12));
-  border-radius: var(--border-radius-base, 0.125rem);
-  background: var(--app-search-bar-bg, #f8f9fa);
-  overflow: visible;
-  box-sizing: border-box;
-}
-
-body.theme-dark .search-page__bar {
-  --app-search-bar-bg: #1e2125;
-}
-
-.search-page__bar:focus-within {
-  border-color: var(--border-color-progressive, #36c);
-  box-shadow: 0 0 0 3px rgba(51, 102, 204, 0.15);
-}
-
-body.theme-dark .search-page__bar:focus-within {
-  box-shadow: 0 0 0 3px rgba(107, 158, 255, 0.18);
-}
-
-.search-page__bar-icon {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-  padding-left: 0.9rem;
-  color: var(--app-search-muted, #54595d);
-  font-size: 1.05rem;
-  line-height: 1;
-  pointer-events: none;
-}
-
-.search-page__input {
-  flex: 1 1 auto;
-  min-width: 0;
-  width: 100%;
-  margin: 0;
-  border: 0;
-  background: transparent;
-  color: var(--app-search-fg, #202122);
-  font: 1rem/1.4 -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif;
-  padding: 0.7rem 0.75rem;
-  outline: none;
-  box-sizing: border-box;
-}
-
-.search-page__input::placeholder {
-  color: color-mix(in srgb, var(--app-search-muted, #54595d) 88%, transparent);
-}
-
-.search-page__submit {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  flex: 0 0 auto;
-  align-self: center;
-  margin: 0.3rem 0.3rem 0.3rem 0;
-  padding: 0.55rem 1rem;
-  border: 1px solid var(--border-color-progressive, #36c);
-  border-radius: var(--border-radius-base, 0.125rem);
-  background: var(--background-color-progressive, #36c);
-  color: var(--color-inverted, #ffffff);
-  font: 0.875rem/1 -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  box-sizing: border-box;
-}
-
-.search-page__submit:hover {
-  background: var(--background-color-progressive--hover, #447ff5);
-}
-
-.search-page__submit:focus-visible {
-  outline: 2px solid var(--border-color-progressive--focus, #36c);
-  outline-offset: 2px;
-}
-
-.search-page__submit i {
-  font-size: 1rem;
-  line-height: 1;
-}
-
-.search-page__suggestions {
-  margin-top: 1.15rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--app-search-border, rgba(0, 0, 0, 0.12));
-}
-
-.search-page__suggestions[hidden] {
-  display: none !important;
-}
-
-.search-page__suggestions-label {
-  margin: 0 0 0.7rem;
-  color: var(--app-search-muted, #54595d);
-  font: 0.75rem/1.2 -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.search-page__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.search-page__results-root {
-  min-height: 0;
-}
-
-.search-page__results-header {
-  margin: 0 0 0.75rem;
-  color: var(--app-search-muted, #54595d);
-  font: 0.875rem/1.4 -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif;
-}
-
-@media (max-width: 520px) {
-  .search-page__panel {
-    padding: 1.1rem 1rem 1.15rem;
-  }
-
-  .search-page__submit-text {
-    display: none;
-  }
-
-  .search-page__submit {
-    padding: 0.55rem 0.7rem;
-  }
-}
-
-.search-page__results {
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.search-page__result {
-  margin: 0;
-  padding: 0;
-}
-
-.search-page__result-link {
-  display: block;
-  padding: 1rem 1.1rem;
-  border: 1px solid var(--app-search-border, rgba(0, 0, 0, 0.12));
-  border-radius: var(--border-radius-base, 0.125rem);
-  background: var(--background-color-base, #ffffff);
-  color: var(--app-search-link, #3366cc);
-  text-decoration: none;
-  transition: background 0.12s ease, border-color 0.12s ease;
-}
-
-body.theme-dark .search-page__result-link {
-  background: #242629;
-}
-
-.search-page__result-link:hover {
-  background: var(--app-search-hover, rgba(0, 0, 0, 0.05));
-  border-color: color-mix(in srgb, var(--app-search-link, #3366cc) 30%, var(--app-search-border, rgba(0, 0, 0, 0.12)));
-  text-decoration: none;
-}
-
-.search-page__result-title {
-  display: block;
-  font-size: 1.125rem;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.search-page__result-description {
-  display: block;
-  margin-top: 0.35rem;
-  color: var(--app-search-fg, #202122);
-  font-size: 0.9375rem;
-  line-height: 1.5;
-}
-
-.search-page__empty {
-  margin: 0;
-  padding: 1.25rem 1.1rem;
-  border: 1px dashed var(--app-search-border, rgba(0, 0, 0, 0.12));
-  border-radius: var(--border-radius-base, 0.125rem);
-  color: var(--app-search-muted, #54595d);
-  font: 0.9375rem/1.55 -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif;
-  text-align: left;
+.app-search__option-name { display: block; font-weight: 600; }
+.app-search__option-place { display: block; margin-top: .12rem; color: var(--color-subtle, #54595d); font-size: .875em; }
+.app-search__dropdown-message { padding: .65rem .85rem; color: var(--color-subtle, #54595d); }
+.gravepedia-search-results:focus { outline: none; }
+.gravepedia-search-empty { padding: 1rem; border: 1px dashed var(--border-color-base, rgba(0,0,0,.16)); border-radius: var(--border-radius-base, .125rem); }
+.gravepedia-search-results .gravepedia-result h2, .gravepedia-search-results .gravepedia-result h3 { margin: 0 0 .5rem; }
+.gravepedia-result__details { display: grid; grid-template-columns: max-content 1fr; gap: .25rem .75rem; margin: .65rem 0 0; }
+.gravepedia-result__details dt { color: var(--color-subtle, #54595d); }
+.gravepedia-result__details dd { margin: 0; }
+.gravepedia-result__inscription { margin: .75rem 0 0; padding-left: .8rem; border-left: 3px solid var(--border-color-base, rgba(0,0,0,.16)); }
+.gravepedia-contribute { margin-top: 1.25rem; }
+.gravepedia-contribute > summary { cursor: pointer; font-weight: 600; }
+.gravepedia-contribute__form { margin-top: 1rem; }
+.gravepedia-form [aria-invalid="true"] { border-color: #b32424; }
+.gravepedia-status { min-height: 1.5em; }
+body.theme-dark .app-search__dropdown { --background-color-interactive: rgba(255,255,255,.08); }
+@media (max-width: 42rem) {
+  .gravepedia-result__details { grid-template-columns: 1fr; gap: .1rem; }
+  .gravepedia-result__details dd + dt { margin-top: .35rem; }
 }
 `;
 
-    let peopleRegistryScriptPromise = null;
-
-    function normalizeSiteRootPrefix(prefix) {
-        if (!prefix || prefix === '/') {
-            return '';
-        }
-
-        return prefix;
-    }
-
     function ensureSearchStyles() {
-        if (document.getElementById(APP_SEARCH_STYLE_ID)) {
+        if (document.getElementById(STYLE_ID)) {
             return;
         }
-
         const style = document.createElement('style');
-        style.id = APP_SEARCH_STYLE_ID;
-        style.textContent = APP_SEARCH_STYLES;
+        style.id = STYLE_ID;
+        style.textContent = SEARCH_STYLES;
         document.head.append(style);
     }
 
-    function ensurePeopleRegistryScript() {
-        if (window.PeopleRegistry) {
-            return Promise.resolve();
-        }
-
-        if (peopleRegistryScriptPromise) {
-            return peopleRegistryScriptPromise;
-        }
-
-        const existingScript = document.querySelector('script[src*="people-registry.js"]');
-        if (existingScript) {
-            peopleRegistryScriptPromise = new Promise((resolve, reject) => {
-                existingScript.addEventListener('load', resolve, { once: true });
-                existingScript.addEventListener('error', reject, { once: true });
-            });
-            return peopleRegistryScriptPromise;
-        }
-
-        peopleRegistryScriptPromise = new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = PEOPLE_REGISTRY_SCRIPT_URL;
-            script.defer = true;
-            script.addEventListener('load', resolve, { once: true });
-            script.addEventListener('error', reject, { once: true });
-            document.head.append(script);
-        });
-
-        return peopleRegistryScriptPromise;
+    function getAppName() {
+        const name = window.App?.getName?.() || window.App?.Name;
+        return typeof name === 'string' && name.trim() ? name.trim() : 'Gravepedia';
     }
 
-    function getSiteRootPrefix() {
-        if (window.PeopleRegistry?.getSiteRootPrefix) {
-            return window.PeopleRegistry.getSiteRootPrefix();
+    function getSiteRootUrl() {
+        if (typeof window.App?.resolveSiteUrl === 'function') {
+            try {
+                return new URL(window.App.resolveSiteUrl(''), window.location.href);
+            } catch (error) {
+                // Use the page path fallback below.
+            }
         }
 
-        const pathname = window.location.pathname.replace(/\\/g, '/');
-        const nestedProfileMatch = pathname.match(/^(.*\/ )people\/[^/]+\/[^/]+$/);
-        if (nestedProfileMatch) {
-            return normalizeSiteRootPrefix(nestedProfileMatch[1]);
+        const url = new URL(window.location.href);
+        const pageMarker = url.pathname.match(/^(.*\/)(?:pages|people)\/.*$/);
+        if (pageMarker) {
+            url.pathname = pageMarker[1];
+        } else if (!url.pathname.endsWith('/')) {
+            url.pathname = url.pathname.slice(0, url.pathname.lastIndexOf('/') + 1);
         }
-
-        const peopleDirectoryMatch = pathname.match(/^(.*\/ )people\/[^/]+\//);
-        if (peopleDirectoryMatch) {
-            return normalizeSiteRootPrefix(peopleDirectoryMatch[1]);
-        }
-
-        if (pathname.includes('/pages/')) {
-            return '../';
-        }
-
-        return '';
-    }
-
-    function resolvePersonProfileUrl(personId) {
-        if (window.PeopleRegistry?.resolvePersonProfileUrl) {
-            return window.PeopleRegistry.resolvePersonProfileUrl(personId);
-        }
-
-        return new URL(`people/${personId}/profile.html`, new URL(getSiteRootPrefix(), window.location.href)).href;
+        url.search = '';
+        url.hash = '';
+        return url;
     }
 
     function resolveSearchPageUrl(query = '') {
-        const trimmedQuery = (query || '').trim();
-
-        // Prefer the site-provided resolver when available — it's authoritative
-        if (window.App?.resolveSiteUrl) {
+        let url;
+        if (typeof window.App?.resolveSiteUrl === 'function') {
             try {
-                const resolved = window.App.resolveSiteUrl('pages/search.html');
-                const url = new URL(resolved, window.location.href);
-                if (trimmedQuery) url.searchParams.set('q', trimmedQuery);
-                return url.href;
-            } catch (e) {
-                // fall through to the fallback below
+                url = new URL(window.App.resolveSiteUrl('pages/search.html'), window.location.href);
+            } catch (error) {
+                url = new URL('pages/search.html', getSiteRootUrl());
             }
+        } else {
+            url = new URL('pages/search.html', getSiteRootUrl());
         }
 
-        // Fallback: resolve relative to the computed site-root prefix so this
-        // works correctly from pages/, people/*/profile, and site root.
-        const base = new URL(getSiteRootPrefix() || '.', window.location.href);
-        const url = new URL('pages/search.html', base);
-        if (trimmedQuery) url.searchParams.set('q', trimmedQuery);
+        const trimmedQuery = String(query || '').trim();
+        if (trimmedQuery) {
+            url.searchParams.set('q', trimmedQuery);
+        } else {
+            url.searchParams.delete('q');
+        }
         return url.href;
     }
 
-    function normalizeSearchText(value) {
-        return (value || '')
-            .trim()
-            .toLowerCase()
-            .replace(/\s+/g, ' ');
+    function getApiBase() {
+        const configuredBase = window.App?.getGitHubApiBase?.() || window.App?.GitHubApiBase;
+        if (typeof configuredBase !== 'string' || !configuredBase.trim()) {
+            throw new Error('The Gravepedia API is not configured.');
+        }
+        return `${configuredBase.trim().replace(/\/+$/, '')}/`;
     }
 
-    function getPersonDisplayName(entry) {
-        return [entry.firstName, entry.lastName].filter(Boolean).join(' ').trim();
+    function getMemorialsEndpoint() {
+        return new URL('memorials.php', getApiBase()).href;
     }
 
-    function scorePersonEntry(query, entry) {
-        const normalizedQuery = normalizeSearchText(query);
-        if (!normalizedQuery) {
-            return 0;
+    async function readJsonResponse(response) {
+        let payload = null;
+        try {
+            payload = await response.json();
+        } catch (error) {
+            // A useful API response must be JSON; handle invalid responses below.
         }
 
-        const firstName = normalizeSearchText(entry.firstName);
-        const lastName = normalizeSearchText(entry.lastName);
-        const fullName = normalizeSearchText(getPersonDisplayName(entry));
-        const id = String(entry.id || '').toLowerCase();
-        let score = 0;
-
-        if (fullName === normalizedQuery || id === normalizedQuery) {
-            score = Math.max(score, 120);
+        if (!response.ok || payload?.success === false) {
+            const message = typeof payload?.message === 'string' ? payload.message : '';
+            const error = new Error(message || 'The request could not be completed.');
+            error.status = response.status;
+            error.payload = payload;
+            throw error;
         }
-
-        if (fullName.startsWith(normalizedQuery) || firstName.startsWith(normalizedQuery) || lastName.startsWith(normalizedQuery) || id.startsWith(normalizedQuery)) {
-            score = Math.max(score, 95);
+        if (!payload || typeof payload !== 'object') {
+            throw new Error('The API returned an unreadable response.');
         }
-
-        if (fullName.includes(normalizedQuery) || firstName.includes(normalizedQuery) || lastName.includes(normalizedQuery)) {
-            score = Math.max(score, 80);
-        }
-
-        const queryTokens = normalizedQuery.split(' ').filter(Boolean);
-        if (queryTokens.length > 1) {
-            const haystack = [firstName, lastName, fullName].join(' ');
-            const allTokensMatch = queryTokens.every((token) => haystack.includes(token));
-            if (allTokensMatch) {
-                score = Math.max(score, 100);
-            }
-        }
-
-        return score;
+        return payload;
     }
 
-    async function loadSearchIndex() {
-        await ensurePeopleRegistryScript();
-        return window.PeopleRegistry.loadPeopleRegistry();
-    }
-
-    async function findPersonMatches(query, { limit = 8 } = {}) {
-        const people = await loadSearchIndex();
-
-        return people
-            .map((entry) => ({
-                entry,
-                score: scorePersonEntry(query, entry),
-                url: resolvePersonProfileUrl(entry.id),
-            }))
-            .filter((result) => result.score > 0)
-            .sort((a, b) => b.score - a.score || getPersonDisplayName(a.entry).localeCompare(getPersonDisplayName(b.entry)))
-            .slice(0, limit);
-    }
-
-    function getSearchInput(form) {
-        return form.querySelector('input[name="search"], input[type="search"]');
-    }
-
-    function getDropdownAnchor(form) {
-        if (form.id === 'header-chrome-search-form' || form.classList.contains('header-chrome__search-form')) {
-            return form;
+    async function findMemorials(query) {
+        const trimmedQuery = String(query || '').trim();
+        if (trimmedQuery.length < 2) {
+            return { results: [], total: 0 };
         }
 
-        return form.querySelector('.app-search-anchor, .search-input, .search-page__bar') || form;
+        const url = new URL(getMemorialsEndpoint());
+        url.searchParams.set('q', trimmedQuery);
+        const response = await fetch(url.href, {
+            method: 'GET',
+            headers: { Accept: 'application/json' },
+            credentials: 'include',
+        });
+        const payload = await readJsonResponse(response);
+        if (!Array.isArray(payload.results)) {
+            throw new Error('The API returned an invalid memorial search response.');
+        }
+        const total = Number(payload.total);
+        return {
+            results: payload.results,
+            total: Number.isFinite(total) && total >= 0 ? total : payload.results.length,
+        };
     }
 
-    function createDropdown(anchor) {
+    function getMemorialName(record) {
+        return String(record?.name || '').trim();
+    }
+
+    function getMemorialPlace(record) {
+        return String(record?.cemetery || '').trim();
+    }
+
+    function createResultCard(record) {
+        const card = document.createElement('article');
+        card.className = 'gravepedia-panel gravepedia-result';
+
+        const name = getMemorialName(record);
+        if (name) {
+            const heading = document.createElement('h2');
+            heading.className = 'gravepedia-result__title';
+            heading.textContent = name;
+            card.append(heading);
+        }
+
+        const details = [];
+        const cemetery = getMemorialPlace(record);
+        if (cemetery) details.push(['Cemetery', cemetery]);
+        if (record?.birth_date) details.push(['Born', String(record.birth_date)]);
+        if (record?.death_date) details.push(['Died', String(record.death_date)]);
+        if (record?.source) details.push(['Source', String(record.source)]);
+
+        if (details.length) {
+            const list = document.createElement('dl');
+            list.className = 'gravepedia-result__details';
+            details.forEach(([label, value]) => {
+                const term = document.createElement('dt');
+                term.textContent = label;
+                const description = document.createElement('dd');
+                description.textContent = value;
+                list.append(term, description);
+            });
+            card.append(list);
+        }
+
+        if (record?.inscription) {
+            const inscription = document.createElement('blockquote');
+            inscription.className = 'gravepedia-result__inscription';
+            inscription.textContent = String(record.inscription);
+            card.append(inscription);
+        }
+
+        if (record?.notes) {
+            const notes = document.createElement('p');
+            notes.textContent = String(record.notes);
+            card.append(notes);
+        }
+
+        return card;
+    }
+
+    function createDropdown(anchor, input) {
         const dropdown = document.createElement('ul');
+        dropdown.id = `gravepedia-search-options-${++nextDropdownId}`;
         dropdown.className = 'app-search__dropdown';
         dropdown.setAttribute('role', 'listbox');
         dropdown.hidden = true;
         anchor.append(dropdown);
+        input.setAttribute('aria-autocomplete', 'list');
+        input.setAttribute('aria-controls', dropdown.id);
+        input.setAttribute('aria-expanded', 'false');
         return dropdown;
     }
 
-    function renderDropdownItems(dropdown, matches, query) {
-        dropdown.textContent = '';
+    function renderDropdownMessage(dropdown, message) {
+        dropdown.replaceChildren();
+        const item = document.createElement('li');
+        item.className = 'app-search__dropdown-message';
+        item.setAttribute('role', 'presentation');
+        item.textContent = message;
+        dropdown.append(item);
+    }
 
-        const appName = getAppName();
-
-        if (matches.length === 0) {
-            const empty = document.createElement('li');
-            empty.className = 'app-search__dropdown-empty';
-            empty.textContent = query.trim() ? `No profiles match "${query.trim()}".` : `Type to search ${appName}.`;
-            dropdown.append(empty);
+    function renderDropdownResults(dropdown, records, query) {
+        dropdown.replaceChildren();
+        if (!records.length) {
+            renderDropdownMessage(dropdown, `No published memorials match “${query}”.`);
             return;
         }
 
-        matches.forEach((match, index) => {
+        records.slice(0, DROPDOWN_LIMIT).forEach((record, index) => {
             const item = document.createElement('li');
             item.className = 'app-search__option';
+            item.id = `${dropdown.id}-option-${index}`;
             item.setAttribute('role', 'option');
+            item.setAttribute('aria-selected', 'false');
             item.dataset.index = String(index);
 
-            const link = document.createElement('a');
-            link.className = 'app-search__option-link';
-            link.href = match.url;
-
-            const title = document.createElement('span');
-            title.className = 'app-search__option-title';
-            title.textContent = getPersonDisplayName(match.entry);
-            link.append(title);
-
-            item.append(link);
+            const name = document.createElement('span');
+            name.className = 'app-search__option-name';
+            name.textContent = getMemorialName(record) || 'Memorial record';
+            item.append(name);
+            const placeText = getMemorialPlace(record);
+            if (placeText) {
+                const place = document.createElement('span');
+                place.className = 'app-search__option-place';
+                place.textContent = placeText;
+                item.append(place);
+            }
+            item.addEventListener('click', () => {
+                const selectedName = getMemorialName(record);
+                if (selectedName) {
+                    window.location.assign(resolveSearchPageUrl(selectedName));
+                }
+            });
             dropdown.append(item);
         });
 
         const footer = document.createElement('li');
-        footer.className = 'app-search__dropdown-footer';
+        footer.className = 'app-search__dropdown-message';
         footer.setAttribute('role', 'presentation');
-
-        const viewAll = document.createElement('a');
-        viewAll.className = 'app-search__dropdown-all';
-        viewAll.href = resolveSearchPageUrl(query);
-        viewAll.textContent = `View all results for “${query.trim()}”`;
-        footer.append(viewAll);
+        footer.textContent = `View all results for “${query}” by pressing Enter.`;
         dropdown.append(footer);
     }
 
-    function setActiveDropdownOption(dropdown, index) {
+    function setActiveOption(dropdown, index, input) {
         const options = [...dropdown.querySelectorAll('.app-search__option')];
         options.forEach((option, optionIndex) => {
-            const isActive = optionIndex === index;
-            option.classList.toggle('is-active', isActive);
-            option.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            const active = optionIndex === index;
+            option.classList.toggle('is-active', active);
+            option.setAttribute('aria-selected', active ? 'true' : 'false');
         });
-        return options[index] || null;
+        if (options[index]) {
+            input.setAttribute('aria-activedescendant', options[index].id);
+            options[index].scrollIntoView({ block: 'nearest' });
+        } else {
+            input.removeAttribute('aria-activedescendant');
+        }
     }
 
-    function bindAppSearchSubmitLink(form, input, { closeDropdown, getActiveMatch, goToSearchPage }) {
-        const submitControl = form.querySelector('a.app-search-submit') || form.querySelector('button[type="submit"]');
-        if (!submitControl) {
-            return;
-        }
-
-        const syncSubmitHref = () => {
-            if (submitControl.tagName === 'A') {
-                submitControl.href = resolveSearchPageUrl(input.value);
-            }
-        };
-
-        input.addEventListener('input', syncSubmitHref);
-        syncSubmitHref();
-
-        if (submitControl.tagName !== 'A') {
-            return;
-        }
-
-        submitControl.addEventListener('click', (event) => {
-            if (event.defaultPrevented) {
-                return;
-            }
-
-            // Let the browser handle open-in-new-tab and other modified clicks.
-            if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
-                syncSubmitHref();
-                return;
-            }
-
-            event.preventDefault();
-            closeDropdown();
-
-            const activeMatch = getActiveMatch();
-            if (activeMatch) {
-                window.location.assign(activeMatch.url);
-                return;
-            }
-
-            goToSearchPage(input.value);
-        });
+    function getSearchInput(form) {
+        return form.querySelector('input[name="search"], input[name="q"], input[type="search"]');
     }
 
-    function bindAppSearchForm(form) {
-        if (!form || form.dataset.appSearchBound === 'true') {
-            return;
+    function getDropdownAnchor(form) {
+        if (form.classList.contains('header-chrome__search-form')) {
+            return form;
         }
-
-        ensureSearchStyles();
-        form.dataset.appSearchBound = 'true';
-
-        const input = getSearchInput(form);
-=======
-    const RECORDS = [
-        {
-            title: 'Memorials',
-            type: 'Collection',
-            description: 'Documented graves, monuments, inscriptions, and linked cemetery records.',
-            url: 'pages/search.html?q=memorials',
-            keywords: 'memorial grave monument inscription headstone'
-        },
-        {
-            title: 'Cemeteries',
-            type: 'Places',
-            description: 'Cemetery profiles with location notes, sections, maps, and preservation status.',
-            url: 'pages/search.html?q=cemeteries',
-            keywords: 'cemetery graveyard churchyard burial ground place map'
-        },
-        {
-            title: 'War Graves',
-            type: 'Memorials',
-            description: 'Service burials, military memorials, and veteran cemetery records.',
-            url: 'pages/search.html?q=war%20graves',
-            keywords: 'war veteran military service soldiers'
-        },
-        {
-            title: 'Obituaries',
-            type: 'Records',
-            description: 'Obituary references connected to memorial and burial records.',
-            url: 'pages/search.html?q=obituaries',
-            keywords: 'obituary death notice family'
-        },
-        {
-            title: 'Photo Requests',
-            type: 'Community',
-            description: 'Open requests for cemetery photos, transcriptions, and location checks.',
-            url: 'pages/search.html?q=photo%20requests',
-            keywords: 'photo request volunteer transcribe'
-        },
-        {
-            title: 'Notable Graves',
-            type: 'Profiles',
-            description: 'Historical memorials and notable burial places curated by contributors.',
-            url: 'pages/search.html?q=notable%20graves',
-            keywords: 'notable historic famous profile'
-        }
-    ];
-
-    function resolveSiteUrl(path) {
-        const cleanPath = String(path || '').replace(/^\//, '');
-        if (window.App?.resolveSiteUrl) {
-            return window.App.resolveSiteUrl(cleanPath);
-        }
-
-        return new URL(cleanPath, window.location.href).href;
+        return form.querySelector('.search-input, .search-page__bar') || form;
     }
 
-    function resolveSearchPageUrl(query) {
-        const url = new URL(resolveSiteUrl('pages/search.html'));
-        const trimmed = String(query || '').trim();
-        if (trimmed) {
-            url.searchParams.set('q', trimmed);
-        }
-        return url.href;
-    }
-
-    function normalize(value) {
-        return String(value || '').trim().toLowerCase();
-    }
-
-    function findMatches(query, limit = 12) {
-        const q = normalize(query);
-        if (!q) {
-            return RECORDS.slice(0, limit);
-        }
-
-        return RECORDS
-            .filter((record) => [record.title, record.type, record.description, record.keywords].some((value) => normalize(value).includes(q)))
-            .slice(0, limit);
+    function goToSearchPage(query) {
+        window.location.assign(resolveSearchPageUrl(query));
     }
 
     function bindAppSearchForm(form) {
@@ -761,25 +312,28 @@ body.theme-dark .search-page__result-link {
             return;
         }
 
-        const input = form.querySelector('input[type="search"], input[name="search"], .header-chrome__search-input');
->>>>>>> ec6052d3872e0fbec1db9610b4257e17cb502462
+        const input = getSearchInput(form);
         if (!input) {
             return;
         }
 
-<<<<<<< HEAD
+        ensureSearchStyles();
+        form.dataset.gravepediaSearchBound = 'true';
         const anchor = getDropdownAnchor(form);
         anchor.classList.add('app-search-anchor');
-        const dropdown = createDropdown(anchor);
-
-        let activeIndex = -1;
+        const dropdown = createDropdown(anchor, input);
         let debounceTimer = null;
-        let latestMatches = [];
+        let activeIndex = -1;
+        let requestController = null;
+        let latestResults = [];
 
         const closeDropdown = () => {
+            window.clearTimeout(debounceTimer);
+            requestController?.abort();
             dropdown.hidden = true;
             activeIndex = -1;
             input.setAttribute('aria-expanded', 'false');
+            input.removeAttribute('aria-activedescendant');
         };
 
         const openDropdown = () => {
@@ -787,349 +341,326 @@ body.theme-dark .search-page__result-link {
             input.setAttribute('aria-expanded', 'true');
         };
 
-        const updateDropdown = async () => {
-            const query = input.value;
-            const trimmedQuery = query.trim();
-
-            if (!trimmedQuery) {
+        const updateSuggestions = async () => {
+            const query = input.value.trim();
+            if (query.length < 2) {
                 closeDropdown();
                 return;
             }
 
-            latestMatches = await findPersonMatches(trimmedQuery, { limit: APP_SEARCH_DROPDOWN_LIMIT });
-            renderDropdownItems(dropdown, latestMatches, trimmedQuery);
-            activeIndex = -1;
+            requestController?.abort();
+            requestController = new AbortController();
+            const currentController = requestController;
+            renderDropdownMessage(dropdown, `Searching ${getAppName()}…`);
             openDropdown();
+            try {
+                const url = new URL(getMemorialsEndpoint());
+                url.searchParams.set('q', query);
+                const response = await fetch(url.href, {
+                    method: 'GET',
+                    headers: { Accept: 'application/json' },
+                    credentials: 'include',
+                    signal: currentController.signal,
+                });
+                const payload = await readJsonResponse(response);
+                if (!Array.isArray(payload.results)) {
+                    throw new Error('The API returned an invalid memorial search response.');
+                }
+                if (currentController !== requestController) return;
+                latestResults = payload.results.slice(0, DROPDOWN_LIMIT);
+                activeIndex = -1;
+                renderDropdownResults(dropdown, latestResults, query);
+                openDropdown();
+            } catch (error) {
+                if (error.name === 'AbortError') return;
+                if (currentController !== requestController) return;
+                latestResults = [];
+                renderDropdownMessage(dropdown, 'Search is temporarily unavailable. You can still submit your search.');
+                openDropdown();
+            }
         };
 
-        const scheduleUpdate = () => {
+        const scheduleSuggestions = () => {
             window.clearTimeout(debounceTimer);
-            debounceTimer = window.setTimeout(() => {
-                void updateDropdown();
-            }, 150);
-        };
-
-        const goToSearchPage = (query) => {
-            const trimmedQuery = (query || '').trim();
-            window.location.assign(resolveSearchPageUrl(trimmedQuery));
-=======
-        form.dataset.gravepediaSearchBound = 'true';
-
-        const submitLink = form.querySelector('a.app-search-submit');
-        const go = () => {
-            window.location.assign(resolveSearchPageUrl(input.value));
->>>>>>> ec6052d3872e0fbec1db9610b4257e17cb502462
+            debounceTimer = window.setTimeout(() => void updateSuggestions(), 180);
         };
 
         form.addEventListener('submit', (event) => {
             event.preventDefault();
-<<<<<<< HEAD
+            const query = input.value.trim();
+            if (query.length < 2) {
+                input.setCustomValidity('Enter at least 2 characters to search memorials.');
+                input.reportValidity();
+                input.addEventListener('input', () => input.setCustomValidity(''), { once: true });
+                return;
+            }
             closeDropdown();
-
-            if (activeIndex >= 0 && latestMatches[activeIndex]) {
-                window.location.assign(latestMatches[activeIndex].url);
-                return;
-            }
-
-            goToSearchPage(input.value);
+            goToSearchPage(query);
         });
 
-        bindAppSearchSubmitLink(form, input, {
-            closeDropdown,
-            getActiveMatch: () => (activeIndex >= 0 ? latestMatches[activeIndex] : null),
-            goToSearchPage,
-        });
-
-        input.addEventListener('input', scheduleUpdate);
-
-        input.addEventListener('focus', () => {
-            if (input.value.trim()) {
-                scheduleUpdate();
+        const submitLink = form.querySelector('a.app-search-submit');
+        const syncSubmitLink = () => {
+            if (submitLink) {
+                submitLink.href = resolveSearchPageUrl(input.value);
             }
+        };
+        input.addEventListener('input', () => {
+            scheduleSuggestions();
+            syncSubmitLink();
         });
-
-        input.addEventListener('keydown', (event) => {
-            const options = dropdown.hidden ? [] : [...dropdown.querySelectorAll('.app-search__option')];
-
-            if (event.key === 'ArrowDown') {
-                if (!options.length) {
-                    return;
-                }
-
-                event.preventDefault();
-                activeIndex = Math.min(activeIndex + 1, options.length - 1);
-                setActiveDropdownOption(dropdown, activeIndex)?.scrollIntoView({ block: 'nearest' });
-                return;
-            }
-
-            if (event.key === 'ArrowUp') {
-                if (!options.length) {
-                    return;
-                }
-
-                event.preventDefault();
-                activeIndex = Math.max(activeIndex - 1, 0);
-                setActiveDropdownOption(dropdown, activeIndex)?.scrollIntoView({ block: 'nearest' });
-                return;
-            }
-
-            if (event.key === 'Escape') {
-                closeDropdown();
-                return;
-            }
-        });
-
-        dropdown.addEventListener('mousedown', (event) => {
-            event.preventDefault();
-        });
-
-        document.addEventListener('click', (event) => {
-            if (!form.contains(event.target)) {
-                closeDropdown();
-            }
-        });
-
-        input.setAttribute('aria-autocomplete', 'list');
-        input.setAttribute('aria-controls', dropdown.id || '');
-        if (!dropdown.id) {
-            dropdown.id = `app-search-dropdown-${Math.random().toString(36).slice(2, 9)}`;
-            input.setAttribute('aria-controls', dropdown.id);
-        }
-        input.setAttribute('aria-expanded', 'false');
-    }
-
-    function initSearchPageChips() {
-        const chips = Array.from(document.querySelectorAll('.search-page__chip[data-query]'));
-        if (!chips.length) return;
-
-        // Set a sensible default (search page) so links work immediately,
-        // then try to resolve to a person profile and replace the label with the full name.
-        chips.forEach((chip) => {
-            const query = chip.dataset.query?.trim() || chip.textContent.trim();
-            if (query) {
-                chip.href = resolveSearchPageUrl(query);
-            }
-        });
-
-        // Asynchronously resolve person profiles for chips when the people registry is available.
-        void ensurePeopleRegistryScript()
-            .then(() => Promise.resolve())
-            .then(async () => {
-                for (const chip of chips) {
-                    try {
-                        const query = chip.dataset.query?.trim() || chip.textContent.trim();
-                        if (!query) continue;
-
-                        const matches = await findPersonMatches(query, { limit: 1 });
-                        if (matches && matches.length) {
-                            const match = matches[0];
-                            chip.href = match.url || resolvePersonProfileUrl(match.entry.id);
-                            const name = getPersonDisplayName(match.entry);
-                            if (name) {
-                                chip.textContent = name;
-                            }
-                        }
-                    } catch (err) {
-                        // If anything fails, leave the chip as a search link.
-                        // Swallow errors to avoid breaking the rest of the page.
-                        // eslint-disable-next-line no-console
-                        console.debug('initSearchPageChips: could not resolve chip', err);
-                    }
-                }
-            })
-            .catch(() => { });
-    }
-
-    async function renderSearchResultsPage() {
-        const resultsRoot = document.getElementById('app-search-results');
-        if (!resultsRoot) {
-            return;
-        }
-
-        ensureSearchStyles();
-        initSearchPageChips();
-
-        const params = new URLSearchParams(window.location.search);
-        const query = (params.get('q') || params.get('search') || '').trim();
-        const metaEl = document.getElementById('app-search-page-meta');
-        const suggestionsEl = document.getElementById('app-search-suggestions');
-        const toolbar = document.querySelector('full-page-toolbar');
-        const formInput = document.querySelector('#search-page-form input[name="search"], #search-page-form input[type="search"]');
-
-        if (formInput) {
-            formInput.value = query;
-        }
-
-        const appName = getAppName();
-        const pageTitle = query ? `Search results for “${query}”` : `Search ${appName}`;
-
-        if (toolbar) {
-            toolbar.setAttribute('title', pageTitle);
-        }
-
-        document.title = query ? `Search: ${query} - ${appName}` : `Search - ${appName}`;
-
-        if (!query) {
-            if (metaEl) {
-                metaEl.textContent = `Enter a name or keyword to find people in ${appName}.`;
-            }
-            if (suggestionsEl) {
-                suggestionsEl.hidden = false;
-            }
-            resultsRoot.replaceChildren();
-            return;
-        }
-
-        if (suggestionsEl) {
-            suggestionsEl.hidden = true;
-        }
-
-        const matches = await findPersonMatches(query, { limit: 100 });
-
-        if (metaEl) {
-            metaEl.textContent = matches.length === 1
-                ? '1 result'
-                : `${matches.length} results`;
-        }
-
-        if (matches.length === 0) {
-            resultsRoot.innerHTML = `<p class="search-page__empty">No profiles matched “${query}”. Try another spelling, pick a popular search above, or use a shorter keyword.</p>`;
-            return;
-        }
-
-        const header = document.createElement('p');
-        header.className = 'search-page__results-header';
-        header.textContent = matches.length === 1 ? '1 profile found' : `${matches.length} profiles found`;
-
-        const list = document.createElement('ul');
-        list.className = 'search-page__results';
-
-        matches.forEach((match) => {
-            const item = document.createElement('li');
-            item.className = 'search-page__result';
-
-            const link = document.createElement('a');
-            link.className = 'search-page__result-link';
-            link.href = match.url;
-
-            const title = document.createElement('span');
-            title.className = 'search-page__result-title';
-            title.textContent = getPersonDisplayName(match.entry);
-            link.append(title);
-
-            item.append(link);
-            list.append(item);
-        });
-
-        resultsRoot.replaceChildren(header, list);
-=======
-            go();
-        });
+        syncSubmitLink();
 
         submitLink?.addEventListener('click', (event) => {
+            if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
+                syncSubmitLink();
+                return;
+            }
             event.preventDefault();
-            go();
+            const query = input.value.trim();
+            if (query.length < 2) {
+                input.setCustomValidity('Enter at least 2 characters to search memorials.');
+                input.reportValidity();
+                input.addEventListener('input', () => input.setCustomValidity(''), { once: true });
+                return;
+            }
+            closeDropdown();
+            goToSearchPage(query);
         });
->>>>>>> ec6052d3872e0fbec1db9610b4257e17cb502462
+
+        input.addEventListener('focus', () => {
+            if (input.value.trim().length >= 2) scheduleSuggestions();
+        });
+        input.addEventListener('keydown', (event) => {
+            const options = dropdown.hidden ? [] : [...dropdown.querySelectorAll('.app-search__option')];
+            if (event.key === 'ArrowDown' && options.length) {
+                event.preventDefault();
+                activeIndex = Math.min(activeIndex + 1, options.length - 1);
+                setActiveOption(dropdown, activeIndex, input);
+            } else if (event.key === 'ArrowUp' && options.length) {
+                event.preventDefault();
+                activeIndex = Math.max(activeIndex - 1, 0);
+                setActiveOption(dropdown, activeIndex, input);
+            } else if (event.key === 'Enter' && activeIndex >= 0 && latestResults[activeIndex]) {
+                event.preventDefault();
+                const selectedName = getMemorialName(latestResults[activeIndex]);
+                if (selectedName) goToSearchPage(selectedName);
+            } else if (event.key === 'Escape') {
+                closeDropdown();
+            }
+        });
+        document.addEventListener('click', (event) => {
+            if (!form.contains(event.target)) closeDropdown();
+        });
     }
 
     function bindAllSearchForms() {
-        document.querySelectorAll('form[role="search"], #search-form, #header-chrome-search-form, #search-page-form').forEach(bindAppSearchForm);
+        document.querySelectorAll('form[role="search"], #search-form, #header-chrome-search-form, #search-page-form')
+            .forEach(bindAppSearchForm);
     }
 
-<<<<<<< HEAD
-    function initAppSearch() {
-        ensureSearchStyles();
-        bindAllSearchForms();
-        initSearchPageChips();
-
-        void ensurePeopleRegistryScript()
-            .then(() => renderSearchResultsPage())
-            .catch((error) => {
-                console.error('Failed to load people registry for search', error);
-
-                const resultsRoot = document.getElementById('app-search-results');
-                const query = (new URLSearchParams(window.location.search).get('q') || '').trim();
-                if (resultsRoot && query) {
-                    resultsRoot.innerHTML = '<p class="search-page__empty">Search is temporarily unavailable. Please try again in a moment.</p>';
-                }
-            });
+    function renderMemorialResults(root, records) {
+        const fragment = document.createDocumentFragment();
+        records.forEach((record) => fragment.append(createResultCard(record)));
+        root.replaceChildren(fragment);
     }
 
-    window.AppSearch = {
-        findPersonMatches,
-        resolveSearchPageUrl,
-        resolvePersonProfileUrl,
-        bindAppSearchForm,
-        bindAllSearchForms,
-        renderSearchResultsPage,
-=======
-    function renderSearchResultsPage() {
+    function addSubmissionLink(message, intro = '') {
+        message.append(document.createTextNode(intro));
+        const link = document.createElement('a');
+        link.href = '#submit-memorial';
+        link.textContent = 'Submit a memorial for review';
+        message.append(link);
+    }
+
+    async function renderSearchResultsPage() {
         const root = document.getElementById('gravepedia-search-results');
-        if (!root) {
-            return;
-        }
+        if (!root) return;
 
+        ensureSearchStyles();
         const params = new URLSearchParams(window.location.search);
         const query = (params.get('q') || params.get('search') || '').trim();
-        const input = document.querySelector('#searchPageInput');
         const meta = document.getElementById('gravepedia-search-meta');
+        const input = document.querySelector('#search-page-form input[name="search"], #search-page-form input[type="search"]');
         const toolbar = document.querySelector('full-page-toolbar');
+        const appName = getAppName();
 
-        if (input) {
-            input.value = query;
-        }
-
-        if (toolbar) {
-            toolbar.setAttribute('title', query ? `Search: ${query}` : 'Search Gravepedia');
-        }
-
-        const matches = findMatches(query);
-        if (meta) {
-            meta.textContent = query
-                ? `${matches.length} result${matches.length === 1 ? '' : 's'} for "${query}"`
-                : 'Search memorials, cemeteries, obituaries, photo requests, and cemetery maps.';
-        }
-
-        root.replaceChildren();
+        if (input) input.value = query;
+        if (toolbar) toolbar.setAttribute('title', query ? `Search: ${query}` : `Search ${appName}`);
+        document.title = query ? `Search: ${query} - ${appName}` : `Search - ${appName}`;
 
         if (!query) {
-            return;
-        }
-
-        if (!matches.length) {
+            if (meta) meta.textContent = 'Search published memorials by name, cemetery, or place.';
             const empty = document.createElement('p');
-            empty.className = 'gravepedia-muted';
-            empty.textContent = 'No Gravepedia sections matched your search yet. Try a broader cemetery or memorial keyword.';
-            root.append(empty);
+            empty.className = 'gravepedia-search-empty';
+            empty.append(document.createTextNode('Enter a name or cemetery to search. New memorial submissions are reviewed before they appear in public results. '));
+            addSubmissionLink(empty);
+            root.replaceChildren(empty);
             return;
         }
 
-        matches.forEach((record) => {
+        if (meta) meta.textContent = `Searching for “${query}”…`;
+        root.setAttribute('aria-busy', 'true');
+        const loading = document.createElement('p');
+        loading.className = 'gravepedia-search-empty';
+        loading.textContent = 'Searching published memorial records…';
+        root.replaceChildren(loading);
+
+        try {
+            const searchResult = await findMemorials(query);
+            const records = searchResult.results;
+            root.removeAttribute('aria-busy');
+            if (meta) {
+                const total = searchResult.total;
+                meta.textContent = `${total} published memorial record${total === 1 ? '' : 's'} found for “${query}”.`;
+            }
+
+            if (!records.length) {
+                const empty = document.createElement('p');
+                empty.className = 'gravepedia-search-empty';
+                empty.append(document.createTextNode(`No published memorial records were found for “${query}”. `));
+                addSubmissionLink(empty);
+                root.replaceChildren(empty);
+                return;
+            }
+            renderMemorialResults(root, records);
+        } catch (error) {
+            root.removeAttribute('aria-busy');
+            if (meta) meta.textContent = 'Memorial search is temporarily unavailable.';
+            const message = document.createElement('p');
+            message.className = 'gravepedia-search-empty';
+            message.setAttribute('role', 'alert');
+            message.textContent = 'We could not load memorial records right now. Please try again in a moment.';
+            const retry = document.createElement('button');
+            retry.className = 'pure-button';
+            retry.type = 'button';
+            retry.textContent = 'Try again';
+            retry.addEventListener('click', () => void renderSearchResultsPage());
+            root.replaceChildren(message, retry);
+        }
+    }
+
+    function makeGitHubLoginUrl() {
+        const url = new URL('github-login.php', getApiBase());
+        url.searchParams.set('return_to', window.location.href);
+        return url.href;
+    }
+
+    function showSubmissionStatus(status, message, loginRequired = false) {
+        status.replaceChildren();
+        const paragraph = document.createElement('span');
+        paragraph.textContent = message;
+        status.append(paragraph);
+        if (loginRequired) {
             const link = document.createElement('a');
-            link.className = 'gravepedia-panel gravepedia-result';
-            link.href = resolveSiteUrl(record.url);
-            link.innerHTML = `
-                <span class="gravepedia-result__title">${record.title}</span>
-                <span class="gravepedia-muted">${record.type}</span>
-                <span>${record.description}</span>
-            `;
-            root.append(link);
+            link.href = makeGitHubLoginUrl();
+            link.textContent = 'Sign in with GitHub';
+            link.className = 'gravepedia-login-link';
+            status.append(document.createTextNode(' '), link);
+        }
+    }
+
+    function isAuthenticationError(error) {
+        const code = String(error.payload?.error || error.payload?.code || '').toLowerCase();
+        const message = String(error.payload?.message || error.message || '').toLowerCase();
+        return error.status === 401 || ((error.status === 403) && /(auth|login|sign in|unauthenticated)/.test(`${code} ${message}`));
+    }
+
+    function bindMemorialSubmissionForm() {
+        const form = document.getElementById('memorial-submission-form');
+        const status = document.getElementById('memorial-submission-status');
+        if (!form || !status || form.dataset.gravepediaSubmissionBound === 'true') return;
+        form.dataset.gravepediaSubmissionBound = 'true';
+
+        const birthDate = form.elements.namedItem('birth_date');
+        const deathDate = form.elements.namedItem('death_date');
+        const requiredTextFields = [
+            [form.elements.namedItem('name'), 'Enter the name shown on the memorial.'],
+            [form.elements.namedItem('cemetery'), 'Enter the cemetery or burial place.'],
+            [form.elements.namedItem('source'), 'Add a source or evidence for this memorial.'],
+        ];
+        const validateRequiredText = () => {
+            requiredTextFields.forEach(([field, message]) => {
+                field.setCustomValidity(field.value.trim() ? '' : message);
+            });
+        };
+        const validateDates = () => {
+            deathDate.setCustomValidity('');
+            birthDate.setCustomValidity('');
+            if (birthDate.value && deathDate.value && deathDate.value < birthDate.value) {
+                deathDate.setCustomValidity('Death date must be on or after the birth date.');
+            }
+        };
+        requiredTextFields.forEach(([field]) => field.addEventListener('input', () => field.setCustomValidity('')));
+        birthDate.addEventListener('change', validateDates);
+        deathDate.addEventListener('change', validateDates);
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            validateRequiredText();
+            validateDates();
+            if (!form.reportValidity()) return;
+
+            const submitButton = form.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting…';
+            status.setAttribute('aria-busy', 'true');
+            showSubmissionStatus(status, 'Sending your memorial for review…');
+
+            const payload = {
+                name: form.elements.namedItem('name').value.trim(),
+                cemetery: form.elements.namedItem('cemetery').value.trim(),
+                birth_date: birthDate.value || '',
+                death_date: deathDate.value || '',
+                inscription: form.elements.namedItem('inscription').value.trim(),
+                notes: form.elements.namedItem('notes').value.trim(),
+                source: form.elements.namedItem('source').value.trim(),
+            };
+
+            try {
+                const response = await fetch(getMemorialsEndpoint(), {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(payload),
+                });
+                const result = await readJsonResponse(response);
+                if (result.status !== 'pending') {
+                    throw new Error('The API did not confirm that the submission is pending review.');
+                }
+                showSubmissionStatus(status, result.message || 'Your memorial was submitted and is pending review. It will appear in public search only after approval.');
+                form.reset();
+            } catch (error) {
+                if (isAuthenticationError(error)) {
+                    showSubmissionStatus(status, 'Sign in with GitHub before submitting a memorial.', true);
+                } else {
+                    const apiMessage = typeof error.payload?.message === 'string' ? error.payload.message.trim() : '';
+                    showSubmissionStatus(status, apiMessage || 'We could not submit your memorial right now. Please try again later.');
+                }
+            } finally {
+                status.removeAttribute('aria-busy');
+                submitButton.disabled = false;
+                submitButton.textContent = originalText;
+            }
         });
     }
 
     function initAppSearch() {
+        ensureSearchStyles();
         bindAllSearchForms();
-        renderSearchResultsPage();
+        bindMemorialSubmissionForm();
+        void renderSearchResultsPage();
     }
 
     window.AppSearch = {
+        findMemorials,
+        resolveSearchPageUrl,
         bindAppSearchForm,
         bindAllSearchForms,
         renderSearchResultsPage,
-        resolveSearchPageUrl,
-        findMatches,
->>>>>>> ec6052d3872e0fbec1db9610b4257e17cb502462
         initAppSearch,
     };
 
@@ -1138,8 +669,4 @@ body.theme-dark .search-page__result-link {
     } else {
         initAppSearch();
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> ec6052d3872e0fbec1db9610b4257e17cb502462
 })();

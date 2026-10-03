@@ -18,25 +18,50 @@
         <full-page-toolbar title="Search {{APP_NAME}}" edit-text="Edit Page" edit-href="#" variant="page"></full-page-toolbar>
         <main class="gravepedia-page">
             <section class="gravepedia-panel" aria-label="Search Gravepedia">
-                <p class="gravepedia-muted" id="gravepedia-search-meta">Search memorials, cemeteries, obituaries, photo requests, and cemetery maps.</p>
-                <form class="gravepedia-form" id="search-page-form" action="#" role="search">
+                <p class="gravepedia-muted" id="gravepedia-search-meta">Search published memorials by name, cemetery, or burial place.</p>
+                <form class="gravepedia-form" id="search-page-form" action="search.html" method="get" role="search">
                     <label for="searchPageInput">
                         <span class="screen-reader-text">Search {{APP_NAME}}</span>
-                        <input id="searchPageInput" name="search" type="search" autofocus autocomplete="off" placeholder="Search Gravepedia...">
+                        <input id="searchPageInput" name="search" type="search" minlength="2" maxlength="160" required autofocus autocomplete="off" aria-describedby="gravepedia-search-meta" placeholder="Search by name or cemetery...">
                     </label>
                     <button class="pure-button pure-button-primary-progressive" type="submit">
                         <i class="bi bi-search" aria-hidden="true"></i>
                         <span>Search</span>
                     </button>
                 </form>
-                <div class="gravepedia-actions" aria-label="Popular searches">
-                    <a class="site-chip" href="search.html?q=memorials">Memorials</a>
-                    <a class="site-chip" href="search.html?q=cemeteries">Cemeteries</a>
-                    <a class="site-chip" href="search.html?q=war%20graves">War Graves</a>
-                    <a class="site-chip" href="search.html?q=photo%20requests">Photo Requests</a>
-                </div>
             </section>
-            <section id="gravepedia-search-results" class="gravepedia-search-results" aria-live="polite"></section>
+            <section id="gravepedia-search-results" class="gravepedia-search-results" aria-label="Memorial search results" aria-live="polite" aria-atomic="true"></section>
+
+            <details class="gravepedia-panel gravepedia-contribute" id="submit-memorial">
+                <summary>Submit a memorial for review</summary>
+                <p class="gravepedia-muted">Share information you can support with a reliable source. Submissions stay private and pending until a reviewer approves them.</p>
+                <form class="gravepedia-form gravepedia-contribute__form" id="memorial-submission-form">
+                    <label for="memorial-name">Name on the memorial <span aria-hidden="true">*</span>
+                        <input id="memorial-name" name="name" type="text" required maxlength="120" autocomplete="off">
+                    </label>
+                    <label for="memorial-cemetery">Cemetery or burial place <span aria-hidden="true">*</span>
+                        <input id="memorial-cemetery" name="cemetery" type="text" required maxlength="200" autocomplete="off">
+                    </label>
+                    <label for="memorial-birth-date">Birth date <span class="gravepedia-muted">(optional)</span>
+                        <input id="memorial-birth-date" name="birth_date" type="date">
+                    </label>
+                    <label for="memorial-death-date">Death date <span class="gravepedia-muted">(optional)</span>
+                        <input id="memorial-death-date" name="death_date" type="date">
+                    </label>
+                    <label for="memorial-inscription">Inscription <span class="gravepedia-muted">(optional)</span>
+                        <textarea id="memorial-inscription" name="inscription" rows="4" maxlength="4000"></textarea>
+                    </label>
+                    <label for="memorial-notes">Additional notes <span class="gravepedia-muted">(optional)</span>
+                        <textarea id="memorial-notes" name="notes" rows="4" maxlength="4000"></textarea>
+                    </label>
+                    <label for="memorial-source">Source or evidence <span aria-hidden="true">*</span>
+                        <textarea id="memorial-source" name="source" rows="3" maxlength="2000" required aria-describedby="memorial-source-help"></textarea>
+                    </label>
+                    <span class="gravepedia-muted" id="memorial-source-help">For example, a cemetery register, an inscription you photographed, or a published record reference.</span>
+                    <button class="pure-button pure-button-primary-progressive" type="submit">Submit for review</button>
+                    <p class="gravepedia-muted gravepedia-status" id="memorial-submission-status" role="status" aria-live="polite" aria-atomic="true"></p>
+                </form>
+            </details>
         </main>
         <full-footer></full-footer>
     </article>
