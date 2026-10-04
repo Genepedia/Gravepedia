@@ -63,7 +63,7 @@ async function listFiles(directory, prefix = '') {
 await rm(outputRoot, { recursive: true, force: true });
 await mkdir(outputRoot, { recursive: true });
 
-for (const file of ['index.html', '404.html', 'index.css', 'index.js', 'site-info.js']) await copyRequiredFile(file);
+for (const file of ['index.html', '404.html', 'index.css', 'index.js', 'site-info.js', 'lib/page-tabs.js']) await copyRequiredFile(file);
 for (const tree of ['assets', 'components', 'pages']) await copyFilteredTree(tree);
 
 for (const file of [
@@ -79,7 +79,7 @@ for (const file of [
 const packagedFiles = await listFiles(outputRoot);
 const forbidden = packagedFiles.filter((file) => !isSafePublicFile(file));
 if (forbidden.length) throw new Error(`Static output contains forbidden files: ${forbidden.slice(0, 10).join(', ')}`);
-for (const required of ['index.html', 'site-info.js', 'components/app-search.js', 'pages/search.html']) {
+for (const required of ['index.html', 'site-info.js', 'components/app-search.js', 'lib/page-tabs.js', 'pages/search.html']) {
   if (!packagedFiles.includes(required)) throw new Error(`Static output is missing ${required}`);
 }
 

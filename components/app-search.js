@@ -109,7 +109,7 @@ body.theme-dark .app-search__dropdown { --background-color-interactive: rgba(255
     }
 
     function getMemorialsEndpoint() {
-        return new URL('memorials.php', getApiBase()).href;
+        return new URL('memorials', getApiBase()).href;
     }
 
     async function readJsonResponse(response) {
@@ -540,7 +540,7 @@ body.theme-dark .app-search__dropdown { --background-color-interactive: rgba(255
     }
 
     function makeGitHubLoginUrl() {
-        const url = new URL('github-login.php', getApiBase());
+        const url = new URL('auth/github/login', getApiBase());
         url.searchParams.set('return_to', window.location.href);
         return url.href;
     }

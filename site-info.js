@@ -4,7 +4,7 @@
         Version: '1.0.0',
         ReleaseDate: '2026-07-01',
         Description: 'Gravepedia is a free cemetery encyclopedia for documenting memorials, burial places, and cemetery history.',
-        GitHubApiBase: 'https://api.genepedia.org/gravepedia',
+        GitHubApiBase: 'https://api.genepedia.org/v1/gravepedia',
         Slogan: 'Free Cemetery Encyclopedia',
         FullSlogan: 'The Free Cemetery Encyclopedia',
         LogoPath: 'assets/Logo.png',
