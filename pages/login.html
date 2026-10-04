@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- Standalone, unlisted login page: keep it out of search engines and crawlers. -->
+	<meta name="robots" content="noindex, nofollow, noarchive">
+	<meta name="referrer" content="same-origin">
+	<title data-brand-template="Sign in - {{APP_NAME}}"></title>
+	<script src="../site-info.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@latest/font/bootstrap-icons.min.css">
+	<link rel="stylesheet" href="../lib/Web-Framework/styles/common.css">
+	<script defer src="../lib/Web-Framework/components/mini-header.js"></script>
+	<script defer src="../lib/Web-Framework/components/full-header.js"></script>
+	<script defer src="../lib/Web-Framework/components/full-footer.js"></script>
+	<style>
+		body {
+			margin: 0;
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+			background: var(--background-color-neutral-subtle, #f4f5f7);
+			color: var(--color-base, #1f2329);
+			font-family: var(--font-family-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+		}
+
+		.login-main {
+			flex: 1 0 auto;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 48px 24px;
+		}
+
+		.login-card {
+			width: 100%;
+			max-width: 380px;
+			background: var(--background-color-base, #ffffff);
+			border: 1px solid var(--border-color-base, #e2e4e9);
+			border-radius: var(--border-radius-base, 2px);
+			padding: 32px 28px;
+			box-shadow: 0 12px 40px rgba(0, 0, 0, 0.10);
+		}
+
+		.login-card__brand {
+			text-align: center;
+			margin: 0;
+			font-size: 1.45rem;
+			font-weight: 700;
+			letter-spacing: -0.01em;
+			color: var(--color-emphasized, var(--color-base, #1f2329));
+		}
+
+		.login-card__subtitle {
+			text-align: center;
+			margin: 4px 0 24px;
+			color: var(--color-subtle, #6b7280);
+			font-size: 0.9rem;
+		}
+
+		.login-card__github {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 9px;
+			width: 100%;
+			box-sizing: border-box;
+			padding: 11px 14px;
+			font-size: 0.95rem;
+			font-weight: 600;
+			text-decoration: none;
+			color: #ffffff;
+			background: #24292f;
+			border-radius: var(--border-radius-base, 2px);
+			transition: background-color 0.15s ease;
+		}
+
+		.login-card__github:hover {
+			background: #1b1f24;
+		}
+
+		.login-card__github svg {
+			width: 20px;
+			height: 20px;
+			fill: currentColor;
+		}
+
+		.login-card__divider {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			margin: 22px 0;
+			color: var(--color-subtle, #6b7280);
+			font-size: 0.78rem;
+		}
+
+		.login-card__divider::before,
+		.login-card__divider::after {
+			content: '';
+			flex: 1;
+			border-top: 1px solid var(--border-color-base, #e2e4e9);
+		}
+
+		.login-card__local[hidden] {
+			display: none;
+		}
+
+		.login-card__field {
+			display: grid;
+			gap: 6px;
+			margin-bottom: 14px;
+			font-size: 0.85rem;
+			font-weight: 600;
+		}
+
+		.login-card__field input {
+			box-sizing: border-box;
+			width: 100%;
+			padding: 10px 11px;
+			border: 1px solid var(--border-color-base, #c9cdd4);
+			border-radius: var(--border-radius-base, 2px);
+			background: var(--background-color-base, #ffffff);
+			color: var(--color-base, #1f2329);
+			font: inherit;
+		}
+
+		.login-card__local-submit {
+			width: 100%;
+			padding: 11px 14px;
+			border: 0;
+			border-radius: var(--border-radius-base, 2px);
+			background: var(--color-emphasized, #314b6e);
+			color: #ffffff;
+			font: inherit;
+			font-weight: 600;
+			cursor: pointer;
+		}
+
+		.login-card__local-submit:disabled {
+			cursor: wait;
+			opacity: 0.7;
+		}
+
+		.login-card__note {
+			margin: 12px 0 0;
+			color: var(--color-subtle, #6b7280);
+			font-size: 0.75rem;
+			line-height: 1.45;
+		}
+
+		.login-card__error {
+			margin-bottom: 18px;
+			padding: 10px 12px;
+			font-size: 0.85rem;
+			color: var(--color-error, #b42318);
+			background: var(--background-color-error-subtle, #fdecec);
+			border: 1px solid var(--border-color-error, #f3c2c2);
+			border-radius: var(--border-radius-base, 2px);
+		}
+
+		.login-card__error[hidden] {
+			display: none;
+		}
+
+		.login-card__footnote {
+			margin: 22px 0 0;
+			text-align: center;
+			font-size: 0.75rem;
+			color: var(--color-subtle, #6b7280);
+		}
+	</style>
+</head>
+
+<body>
+	<script>
+		// Apply the saved theme before paint to avoid a flash of the wrong colours.
+		(function () {
+			try {
+				var theme = localStorage.getItem('app-theme');
+				if (theme !== 'dark' && theme !== 'light') {
+					theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				}
+				if (theme === 'dark') {
+					document.body.classList.add('theme-dark');
+				}
+			} catch (e) {
+				/* ignore storage errors */
+			}
+		})();
+	</script>
+
+	<full-header></full-header>
+
+	<main class="login-main">
+		<div class="login-card">
+		<h1 class="login-card__brand">{{APP_NAME}}</h1>
+		<p class="login-card__subtitle">Continue securely with your GitHub account.</p>
+
+		<div class="login-card__error" id="login-error" role="alert" hidden></div>
+
+		<section class="login-card__local" id="local-login-section" hidden aria-label="Username and password sign-in">
+			<form id="local-login-form">
+				<label class="login-card__field" for="local-login-username">
+					Username
+					<input id="local-login-username" name="username" type="text" autocomplete="username" required>
+				</label>
+				<label class="login-card__field" for="local-login-password">
+					Password
+					<input id="local-login-password" name="password" type="password" autocomplete="current-password" required>
+				</label>
+				<button class="login-card__local-submit" id="local-login-submit" type="submit">Sign in</button>
+				<p class="login-card__note">This account can browse while signed in. Use GitHub sign-in to edit or publish content.</p>
+			</form>
+			<div class="login-card__divider" aria-hidden="true"><span>or continue with</span></div>
+		</section>
+
+		<a class="login-card__github" id="login-github" href="#">
+			<svg viewBox="0 0 16 16" aria-hidden="true">
+				<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+			</svg>
+			Continue with GitHub
+		</a>
+
+		<p class="login-card__footnote">Authorized access only.</p>
+		</div>
+	</main>
+
+	<full-footer></full-footer>
+
+	<script>
+		(function () {
+			'use strict';
+
+			var errorBox = document.getElementById('login-error');
+			var githubButton = document.getElementById('login-github');
+			var localLoginSection = document.getElementById('local-login-section');
+			var localLoginForm = document.getElementById('local-login-form');
+			var localLoginSubmit = document.getElementById('local-login-submit');
+
+			// Where to land after a successful sign-in. Defaults to the home page,
+			// and only same-origin targets are accepted (no open redirects).
+			function resolveNextUrl() {
+				var fallback = new URL('../index.html', window.location.href);
+				try {
+					var requested = new URLSearchParams(window.location.search).get('next');
+					if (!requested) {
+						return fallback;
+					}
+					var candidate = new URL(requested, window.location.href);
+					return candidate.origin === window.location.origin ? candidate : fallback;
+				} catch (e) {
+					return fallback;
+				}
+			}
+
+			var nextUrl = resolveNextUrl();
+
+			function resolveApiUrl(fileName) {
+				var base = (window.App && (window.App.getGitHubApiBase ? window.App.getGitHubApiBase() : window.App.GitHubApiBase)) || '';
+				var trimmed = String(base).trim();
+				if (!trimmed) {
+					return '';
+				}
+				try {
+					return new URL(fileName, trimmed.replace(/\/+$/, '') + '/').href;
+				} catch (e) {
+					return '';
+				}
+			}
+
+			function showError(message) {
+				errorBox.textContent = message;
+				errorBox.hidden = false;
+			}
+
+			function clearError() {
+				errorBox.textContent = '';
+				errorBox.hidden = true;
+			}
+
+			// Keep the username/password form out of view unless the API has it configured.
+			var configEndpoint = resolveApiUrl('github-config.php');
+			if (configEndpoint) {
+				fetch(configEndpoint, { cache: 'no-store', credentials: 'include' })
+					.then(function (response) { return response.ok ? response.json() : null; })
+					.then(function (payload) {
+						if (payload && payload.local_login_configured === true) {
+							localLoginSection.hidden = false;
+						}
+					})
+					.catch(function () { /* keep the optional form hidden when the API is unavailable */ });
+			}
+
+			localLoginForm.addEventListener('submit', async function (event) {
+				event.preventDefault();
+				clearError();
+				var loginEndpoint = resolveApiUrl('local-login.php');
+				if (!loginEndpoint) {
+					showError('Username and password sign-in is not configured.');
+					return;
+				}
+
+				var username = String(localLoginForm.elements.username.value || '').trim();
+				var password = String(localLoginForm.elements.password.value || '');
+				localLoginSubmit.disabled = true;
+				localLoginSubmit.textContent = 'Signing in…';
+
+				try {
+					var response = await fetch(loginEndpoint, {
+						method: 'POST',
+						cache: 'no-store',
+						credentials: 'include',
+						headers: {
+							Accept: 'application/json',
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({ username: username, password: password })
+					});
+					var payload = await response.json().catch(function () { return null; });
+					var handoffCode = String(payload && payload.handoff || '').trim();
+					if (!response.ok || !payload || !payload.authenticated || !handoffCode) {
+						throw new Error(payload && payload.message || 'Invalid username or password.');
+					}
+
+					localLoginForm.reset();
+					var destination = new URL(nextUrl.href);
+					destination.searchParams.delete('github_handoff');
+					destination.searchParams.delete('github_auth_error');
+					destination.searchParams.set('github_handoff', handoffCode);
+					window.location.assign(destination.href);
+				} catch (error) {
+					showError(error && error.message || 'Could not sign in. Please try again.');
+					localLoginSubmit.disabled = false;
+					localLoginSubmit.textContent = 'Sign in';
+				}
+			});
+
+			// "Continue with GitHub" uses the normal GitHub OAuth entry point and
+			// returns to the post-login destination, exactly like the header button.
+			githubButton.addEventListener('click', function (event) {
+				event.preventDefault();
+				clearError();
+				var loginEndpoint = resolveApiUrl('github-login.php');
+				if (!loginEndpoint) {
+					showError('GitHub sign-in is not configured.');
+					return;
+				}
+				try {
+					var url = new URL(loginEndpoint);
+					url.searchParams.set('return_to', nextUrl.href);
+					window.location.assign(url.href);
+				} catch (e) {
+					showError('GitHub sign-in is not configured.');
+				}
+			});
+		})();
+	</script>
+	<script defer src="../index.js"></script>
+</body>
+
+</html>
